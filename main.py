@@ -11,7 +11,6 @@ def get_dict():
         df = pd.read_csv(r"data\words_to_learn.csv", header=0)
     except FileNotFoundError:
         df = pd.read_csv(r"data\french_words.csv", header=0)
-
     finally:
         words_list = df.to_dict(orient="records")
     return words_list
@@ -88,9 +87,5 @@ right_button = tk.Button(
     command=right_answer,
 )
 right_button.grid(column=1, row=1)
-
-
-# canvas.itemconfig(language_text_front, text="French")
-# canvas.itemconfig(word_text_front, text="trouve")
 
 window.mainloop()

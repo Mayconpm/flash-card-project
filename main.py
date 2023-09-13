@@ -1,29 +1,37 @@
 import tkinter as tk
+from random import randint
+
 import pandas as pd
-from random import choice
 
 BACKGROUND_COLOR = "#B1DDC6"
 
 
 def get_dict():
-    df = pd.read_csv(r"data\french_words.csv", header=0)
-    return df.to_dict(orient="records")
+    try:
+        df = pd.read_csv(r"data\words_to_learn.csv", header=0)
+    except FileNotFoundError:
+        df = pd.read_csv(r"data\french_words.csv", header=0)
+
+    finally:
+        words_list = df.to_dict(orient="records")
+    return words_list
 
 
 def get_word():
-    word_dict = choice(words_list)
+    global word_index
+    word_index = randint(0, len(words_list) - 1)
+    word_dict = words_list[word_index]
     french_word, english_word = word_dict.values()
     return french_word, english_word
 
 
 def change_french_word():
     french_word, english_word = get_word()
-
     canvas.itemconfig(card, image=card_front_image)
     canvas.itemconfig(language_text_front, text="French", fill="black")
     canvas.itemconfig(word_text_front, text=french_word, fill="black")
-
     canvas.after(3000, change_to_english, english_word)
+    return french_word, english_word
 
 
 def change_to_english(english_word):
@@ -32,7 +40,11 @@ def change_to_english(english_word):
     canvas.itemconfig(word_text_front, text=english_word, fill="white")
 
 
-# def right_answer():
+def right_answer():
+    del words_list[word_index]
+    df = pd.DataFrame(words_list)
+    df.to_csv(r"data\words_to_learn.csv", index=False)
+    change_french_word()
 
 
 words_list = get_dict()
@@ -73,7 +85,7 @@ right_button = tk.Button(
     bg=BACKGROUND_COLOR,
     activebackground=BACKGROUND_COLOR,
     highlightthickness=0,
-    command=change_french_word,
+    command=right_answer,
 )
 right_button.grid(column=1, row=1)
 
